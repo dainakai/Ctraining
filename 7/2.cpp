@@ -7,8 +7,11 @@ Read two images which are adjacent in time each other.
 Former called interrogation, latter called search window.
 Calculate cross-correlation and vectors which are 50% overlapped each other.
 
-CAUTION! : Image pixel arrays [y][x] are arranged so that the origin [0][0] is
-the upper-left corner and y-axis is inversed. 
+CAUTION!
+* Image pixel arrays [y][x] are arranged so that the origin [0][0] is
+*the upper-left corner and y-axis is inversed. 
+* Varuable parameters should be power of two so that arrays which are 
+*dependent on them can be computed. 
 ******************************************************************************/
 #include<bits/stdc++.h>
 #include<omp.h>
@@ -18,33 +21,44 @@ const char* inputimage1 = "./result/00000.bmp";
 const char* inputimage2 = "./result/00001.bmp";
 unsigned char header_buf [1078];
 
+const char* outputdata = "data.dat";
+const char* xxlabel = "{/Times-New-Roman:Italic=20 x} [pixel]";
+const char* yylabel = "{/Times-New-Roman:Italic=20 y} [pixel]";
+const char* cb_label = "{/Symbol:Italic=20 w}_{/Times-New-Roman:Italic=20 z} [sec]";//color bar range min
+
 const int L=512; // Length of inputting image square
 unsigned char image1[L][L]; // brightness value arrays of former image
 unsigned char image2[L][L]; // same as above but latter image
 
+/************************PARAMETERS*****************************/
 const int M = 32; // x horizontal length of Interrogation window
 const int N = 32; // y vertical length of Interrogation window
-const int x_min = -16; // Search window expansion for Interrogation window
-const int x_max = 16;
-const int y_min = -16;
-const int y_max = 16;
+const int Sx = 16; // half of horizontal extension of I winodw
+const int Sy = 16; // half of vertical extension of I window
+/***********************PARAMETERS END**************************/
+
+const int x_min = -Sx; // moving range of I window which consists Search window
+const int x_max = Sx;
+const int y_min = -Sy;
+const int y_max = Sy;
 const int shift = 16; // Correlation window shift
+const int Cdimx = 2*(L-2*Sx)/M - 1; // horizontal dimension of correlation windows
+const int Cdimy = 2*(L-2*Sy)/N - 1; // vertical dimension of correlation windows
 
-double C[(L-N)/N][(L-M)/M][N][M]; // Correlation window on each Interrogation
-double vx[L][L]; // x-axis velocity
-double vy[L][L]; // y-axis velocity (notice CAUTION!)
 
-const int grid_s = 1; // grid spacing shift
+double C[Cdimy][Cdimx][N][M]; // Correlation window on each Interrogation
+double vx[Cdimy][Cdimx]; // x-axis velocity
+double vy[Cdimy][Cdimx]; // y-axis velocity
 
-// Temporary data (needed when using OpenMP)
-double numer[(L-N)/N][(L-M)/M][N][M]; // Numerator of each C[N][M]
-double denom1[(L-N)/N][(L-M)/M][N][M]; // Denominator of rach C[N][M]
-double denom2[(L-N)/N][(L-M)/M]; // Denominator of rach C[N][M]
-double avrI[(L-N)/N][(L-M)/M];
-double avrS[(L-N)/N][(L-M)/M];
-
+// Temporary data
+double numer[Cdimy][Cdimx][N][M]; // Numerator of each C window
+double denom1[Cdimy][Cdimx][N][M]; // Denominator of each C window
+double denom2[Cdimy][Cdimx]; // Denominator of each C window
+double avrI[Cdimy][Cdimx];
+double avrS[Cdimy][Cdimx];
 
 FILE* fp;
+FILE* gp;
 /*********************************main*****************************************/
 int main(void){
 
@@ -60,23 +74,35 @@ int main(void){
   fclose (fp);
 
   // Window calculating one by one
-  for (int i = 0; i < (L-N)/N; i++){ // Start point x
-    for (int j = 0; j < (L-M)/M; j++){ // Start point y
+  #pragma omp parallel for
+  for (int i = 0; i < Cdimy; i++){ // Start point x
+    for (int j = 0; j < Cdimx; j++){ // Start point y
       
-      // Calculate avr. values I,S[N][M]
+      // Calculate avr. values of I
       avrI[i][j] = 0;
       avrS[i][j] = 0;
 
       for (int k = 0; k < N; k++){
         for (int l = 0; l < M; l++){
-          avrI[i][j] += image1[i*N+k][j*M+l];
-          avrS[i][j] += image2[i*N+k][j*M+l];
+          avrI[i][j] += image1[Sy+i*N/2+k][Sx+j*M/2+l];
         }
       }
 
+      for (int k = y_min ; k < N + y_max; k++){
+        for (int l = x_min ; l < M + x_max; l++){
+          avrS[i][j] += image2[Sy+i*N/2+k][Sx+i*M/2+l];
+        }
+      }
+      
       avrI[i][j] /= N*M;
-      avrS[i][j] /= N*M;
+      avrS[i][j] /= (N + y_max - y_min)*(M + x_max - x_min);
 
+    }
+  }
+
+  #pragma omp parallel for
+  for (int i = 0; i < Cdimy; i++){
+    for (int j = 0; j < Cdimx; j++){
 
       // Calculate numer, denom, and Crr
       for (int k = 0; k < N; k++){
@@ -88,40 +114,107 @@ int main(void){
       }
       
 
-      for (int k = 0; k < N; k++){
-        for (int l = 0; l < M; l++){
-          for (int n = 0; n < N; n++){
-            for (int m = 0; m < M; m++){
-              numer[i][j][k][l] += (image1[i*N+n][j*M+m]-avrS[i][j])*(image2[i*N+n][j*M+m]-avrI[i][j]);
+      for (int CIdxy = 0; CIdxy < N; CIdxy++){
+        for (int CIdxx = 0; CIdxx < M; CIdxx++){
+          for (int k = 0; k < N; k++){
+            for (int l = 0; l < M; l++){
+              numer[i][j][CIdxy][CIdxx] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j]);
             }
           }
         }
       }
       
-      for (int k = 0; k < N; k++){
-        for (int l = 0; l < M; l++){
-          for (int n = 0; n < N; n++){
-            for (int m = 0; m < M; m++){
-              denom1[i][j][k][l] += (image1[i*N+n][j*M+m]-avrS[i][j])*(image1[i*N+n][j*M+m]-avrS[i][j]);
-              denom2[i][j] += (image2[i*N+n][j*M+m]-avrI[i][j])*(image2[i*N+n][j*M+m]-avrI[i][j]);
+      for (int CIdxy = 0; CIdxy < N; CIdxy++){
+        for (int CIdxx = 0; CIdxx < M; CIdxx++){
+          for (int k = 0; k < N; k++){
+            for (int l = 0; l < M; l++){
+              denom1[i][j][CIdxy][CIdxx] += (image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j])*(image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j]);
             }
           }
         }
       }
-      
 
+      for (int k = 0; k < N; k++){
+        for (int l = 0; l < M; l++){
+          denom2[i][j] = (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j]);
+        }
+      }
+      
     }
   }
+
+  #pragma omp parallel for
+  for (int i = 0; i < Cdimy; i++){
+    for (int j = 0; j < Cdimx; j++){
+      for (int CIdxy = 0; CIdxy < N; CIdxy++){
+        for (int CIdxx = 0; CIdxx < M; CIdxx++){
+          C[i][j][CIdxy][CIdxx] = numer[i][j][CIdxy][CIdxx]/sqrt(denom1[i][j][CIdxy][CIdxx]*denom2[i][j]);
+        }
+      }
+    }
+  }
+
+
+  double min[Cdimy][Cdimx];
+  double max[Cdimy][Cdimx];
+  for (int i = 0; i < Cdimy; i++){
+    for (int j = 0; j < Cdimx; j++){
+      min[i][j] = 1000.0;
+      max[i][j] = -1000.0;
+
+      for (int k = 0; k < N; k++){
+        for (int l = 0; l < M; l++){
+          if(min[i][j] > C[i][j][k][l]){
+            min[i][j] = C[i][j][k][l];
+          }
+          if(max[i][j] < C[i][j][k][l]){
+            max[i][j] = C[i][j][k][l];
+            vx[i][j] = l - M/2;
+            vy[i][j] = k - N/2;
+          }
+        }
+      }
+    }
+  }
+
+  fp = fopen(outputdata,"w");
+  for (int i = 0; i < Cdimy; i++){
+    for (int j = 0; j < Cdimx; j++){
+      fprintf(fp, "%d %d %lf %lf\n", j, i, vx[i][j], vy[i][j]);
+    }
+  }
+
+  fclose(fp);
   
+  if ((gp = popen("gnuplot", "w")) == NULL) {
+	printf("gnuplot is not here!\n");
+	exit(0);
+	}
 
+  //PNG image
+	fprintf(gp,"set terminal pngcairo enhanced font 'Times New Roman,15' \n");
+	fprintf(gp,"set output 'result1.png'\n");
+	
+	fprintf(gp,"set size ratio -1\n");
 
+	fprintf(gp,"set lmargin screen 0.15\n");
+	fprintf(gp,"set rmargin screen 0.85\n");
+	fprintf(gp,"set tmargin screen 0.85\n");
+	fprintf(gp,"set bmargin screen 0.15\n");
 
+  // fprintf(gp,"set yrange reverse\n");
 
+	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
+	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
+	fprintf(gp,"set palette rgb 33,13,10\n");
+	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.10):($4*0.10)  w vector ti ''\n");
 
+ 	fflush(gp); //Clean up Data
 
+	fprintf(gp, "exit\n"); // Quit gnuplot
+	pclose(gp);
 
-
-
+  
   return 0;
 }
