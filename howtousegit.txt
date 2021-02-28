@@ -1,0 +1,7 @@
+github の使い方
+
+git add -u
+
+git commit -m "comment"
+
+git push
