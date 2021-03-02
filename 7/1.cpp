@@ -23,8 +23,8 @@ char outputpath2[100];
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
 const int N = 1000;
-const double dt = 30; 
-const int rep = 2;
+const double dt = 10; 
+const int rep = 3;
 
 const int width1 = 1024;
 const int height1 = 1024;

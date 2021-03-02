@@ -202,7 +202,7 @@ int main(void){
 	fprintf(gp,"set tmargin screen 0.85\n");
 	fprintf(gp,"set bmargin screen 0.15\n");
 
-  // fprintf(gp,"set yrange reverse\n");
+  fprintf(gp,"set yrange reverse\n");
 
 	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
