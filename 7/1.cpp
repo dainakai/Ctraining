@@ -23,8 +23,8 @@ char outputpath2[100];
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
 const int N = 1000;
-const double dt = 10; 
-const int rep = 3;
+const double dt = 5; 
+const int rep = 2;
 
 const int width1 = 1024;
 const int height1 = 1024;
@@ -38,7 +38,7 @@ unsigned char image_out2[height2][width2];
 double a[N],b[N];
 double u[N],v[N];
 double radius[N]; // Each particle diameter
-int particle_x[rep][N],particle_y[rep][N];
+double particle_x[rep][N],particle_y[rep][N];
 double Z; // Standard Normal Distribution
 double bright[rep][height1][width1];
 
@@ -76,8 +76,8 @@ int main (int argc, char *argv[]){
    
   for (int i = 1; i < rep; i++){
     for (int j = 0; j < N; j++){
-      u[j] = cos (2.0* M_PI/ (width1-1) *particle_x[i-1][j])* sin (2.0* M_PI/ (height1-1) *particle_y[i-1][j]);
-      v[j] = -1.0* sin(2.0* M_PI/ (width1-1) *particle_x[i-1][j])* cos (2.0* M_PI/ (height1-1) *particle_y[i-1][j]);
+      u[j] = cos (2.0* M_PI/ (width1-1.0) *particle_x[i-1][j])* sin (2.0* M_PI/ (height1-1.0) *particle_y[i-1][j]);
+      v[j] = -1.0* sin(2.0* M_PI/ (width1-1.0) *particle_x[i-1][j])* cos (2.0* M_PI/ (height1-1.0) *particle_y[i-1][j]);
 
       particle_x[i][j] = particle_x[i-1][j] + u[j]*dt;
       particle_y[i][j] = particle_y[i-1][j] + v[j]*dt;

@@ -8,9 +8,9 @@ Former called interrogation, latter called search window.
 Calculate cross-correlation and vectors which are 50% overlapped each other.
 
 CAUTION!
-* Image pixel arrays [y][x] are arranged so that the origin [0][0] is
+* Image pixel arrays [y][x] are arranged so that the origin [0][0] is on
 *the upper-left corner and y-axis is inversed. 
-* Varuable parameters should be power of two so that arrays which are 
+* Variable parameters should be power of two so that arrays which are 
 *dependent on them can be computed. 
 ******************************************************************************/
 #include<bits/stdc++.h>
@@ -113,12 +113,12 @@ int main(void){
         }
       }
       
-
+////  changed changed tested image2[Sy + i*N/2 + k]
       for (int CIdxy = 0; CIdxy < N; CIdxy++){
         for (int CIdxx = 0; CIdxx < M; CIdxx++){
           for (int k = 0; k < N; k++){
             for (int l = 0; l < M; l++){
-              numer[i][j][CIdxy][CIdxx] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j]);
+              numer[i][j][CIdxy][CIdxx] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image2[ i*N/2+k + CIdxy][ j*M/2+l + CIdxx]-avrS[i][j]);
             }
           }
         }
@@ -128,7 +128,7 @@ int main(void){
         for (int CIdxx = 0; CIdxx < M; CIdxx++){
           for (int k = 0; k < N; k++){
             for (int l = 0; l < M; l++){
-              denom1[i][j][CIdxy][CIdxx] += (image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j])*(image2[Sy+i*N/2+k + CIdxy][Sx+j*M/2+l + CIdxx]-avrS[i][j]);
+              denom1[i][j][CIdxy][CIdxx] += (image2[i*N/2+k + CIdxy][j*M/2+l + CIdxx]-avrS[i][j])*(image2[i*N/2+k + CIdxy][j*M/2+l + CIdxx]-avrS[i][j]);
             }
           }
         }
@@ -154,28 +154,36 @@ int main(void){
     }
   }
 
-
   double min[Cdimy][Cdimx];
   double max[Cdimy][Cdimx];
   for (int i = 0; i < Cdimy; i++){
     for (int j = 0; j < Cdimx; j++){
-      min[i][j] = 1000.0;
-      max[i][j] = -1000.0;
+      max[i][j] = 0.0;
 
       for (int k = 0; k < N; k++){
         for (int l = 0; l < M; l++){
-          if(min[i][j] > C[i][j][k][l]){
-            min[i][j] = C[i][j][k][l];
-          }
           if(max[i][j] < C[i][j][k][l]){
             max[i][j] = C[i][j][k][l];
-            vx[i][j] = l - M/2;
-            vy[i][j] = k - N/2;
+            vx[i][j] = (double)l - (double)M/2.0;
+            vy[i][j] = (double)N/2.0 - (double)k;
           }
         }
       }
     }
   }
+
+  for (int i = 0; i < Cdimy; i++)
+  {
+    for (int j = 0; j < Cdimx; j++)
+    {
+      if(vx[i][j]*vx[i][j]+vy[i][j]*vy[i][j] > 10){
+        vx[i][j] = 0.0;
+        vy[i][j] = 0.0;
+      }
+    }
+    
+  }
+  
 
   fp = fopen(outputdata,"w");
   for (int i = 0; i < Cdimy; i++){
@@ -202,13 +210,13 @@ int main(void){
 	fprintf(gp,"set tmargin screen 0.85\n");
 	fprintf(gp,"set bmargin screen 0.15\n");
 
-  fprintf(gp,"set yrange reverse\n");
+  // fprintf(gp,"set yrange reverse\n");
 
 	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
 	fprintf(gp,"set palette rgb 33,13,10\n");
-	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.10):($4*0.10)  w vector ti ''\n");
+	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.50):($4*0.50)  w vector ti ''\n");
 
  	fflush(gp); //Clean up Data
 
