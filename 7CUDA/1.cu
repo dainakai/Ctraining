@@ -23,9 +23,9 @@ char outputpath2[100];
 
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
-const int N = 1000;
-const double dt = 30; 
-const int rep = 2;
+const int Ndef = 1000;
+const double dtdef = 5; 
+const int repdef = 2;
 
 const int width1 = 1024;
 const int height1 = 1024;
@@ -49,6 +49,16 @@ FILE* fp;
 /*********************************main****************************************/
 int main (int argc, char *argv[]){
   srand((unsigned int)time(NULL)); // Initializing rand() with the current time
+
+  if(argv[1] == "--help"){
+    printf("PIV Image Generating Software with CUDA\n\n");
+    printf("Put appropriate numbers of iterations, particles, and interval in this order.\n");
+    printf("You can't skip any of parameters. If you want to set them as default numbers, put '-d' as option.\n");
+    exit(1);
+  }
+  if(argv[1] == "-d"){
+    
+  }
 
   // Output image directory
   mkdir(outputheader1,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);

@@ -201,7 +201,7 @@ int main(void){
 
   //PNG image
 	fprintf(gp,"set terminal pngcairo enhanced font 'Times New Roman,15' \n");
-	fprintf(gp,"set output 'result1.png'\n");
+	fprintf(gp,"set output 'result.png'\n");
 	
 	fprintf(gp,"set size ratio -1\n");
 
