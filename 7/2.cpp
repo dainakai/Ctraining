@@ -216,7 +216,7 @@ int main(void){
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
 	fprintf(gp,"set palette rgb 33,13,10\n");
-	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.50):($4*0.50)  w vector ti ''\n");
+	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.5):($4*(-0.5))  w vector ti ''\n");
 
  	fflush(gp); //Clean up Data
 

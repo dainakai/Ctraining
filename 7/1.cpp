@@ -23,7 +23,7 @@ char outputpath2[100];
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
 const int N = 1000;
-const double dt = 5; 
+const double dt = 3; 
 const int rep = 2;
 
 const int width1 = 1024;
@@ -67,7 +67,7 @@ int main (int argc, char *argv[]){
     b[i]=(double)rand()/RAND_MAX;
 
     Z = sqrt(-2.0*log(a[i]))*cos((double)2.0*M_PI*b[i]);
-    radius[i] = sddia*Z+avrdia;
+    radius[i] = sddia*Z+0.50*avrdia;
 
     particle_x[0][i] = rand() % 1024 ;
     particle_y[0][i] = rand() % 1024 ;
