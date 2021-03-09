@@ -11,7 +11,6 @@ variable particular N, iterations rep
 #include<bits/stdc++.h>
 #include<sys/stat.h>
 #include<cuda_runtime.h>
-
 using namespace std;
 
 const char* inputimage1 = "./images/1024.bmp";
@@ -23,9 +22,9 @@ char outputpath2[100];
 
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
-const int Ndef = 1000;
-const double dtdef = 5; 
-const int repdef = 2;
+const int N = 1000;
+const double dt = 5; 
+const int rep = 2;
 
 const int width1 = 1024;
 const int height1 = 1024;
@@ -33,13 +32,13 @@ const int width2 = 512;
 const int height2 = 512;
 unsigned char header_buf1 [1078];
 unsigned char header_buf2 [1078];
-unsigned char image_out1[height1][width1];
-unsigned char image_out2[height2][width2];
+unsigned char image_out1[rep][height1][width1];
+unsigned char image_out2[rep][height2][width2];
 
 double a[N],b[N];
 double u[N],v[N];
 double radius[N]; // Each particle diameter
-int particle_x[rep][N],particle_y[rep][N];
+double particle_x[rep][N],particle_y[rep][N];
 double Z; // Standard Normal Distribution
 double bright[rep][height1][width1];
 
@@ -49,16 +48,6 @@ FILE* fp;
 /*********************************main****************************************/
 int main (int argc, char *argv[]){
   srand((unsigned int)time(NULL)); // Initializing rand() with the current time
-
-  if(argv[1] == "--help"){
-    printf("PIV Image Generating Software with CUDA\n\n");
-    printf("Put appropriate numbers of iterations, particles, and interval in this order.\n");
-    printf("You can't skip any of parameters. If you want to set them as default numbers, put '-d' as option.\n");
-    exit(1);
-  }
-  if(argv[1] == "-d"){
-    
-  }
 
   // Output image directory
   mkdir(outputheader1,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
@@ -80,8 +69,8 @@ int main (int argc, char *argv[]){
     Z = sqrt(-2.0*log(a[i]))*cos((double)2.0*M_PI*b[i]);
     radius[i] = sddia*Z+avrdia;
 
-    particle_x[0][i] = rand() % 1024 ;
-    particle_y[0][i] = rand() % 1024 ;
+    particle_x[0][i] = (double)(rand() % 1024) ;
+    particle_y[0][i] = (double)(rand() % 1024) ;
     maxb[i]= (rand() % 128)+128;
   }
    

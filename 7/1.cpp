@@ -23,7 +23,7 @@ char outputpath2[100];
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
 const int N = 1000;
-const double dt = 5; 
+const double dt = 5.0; 
 const int rep = 2;
 
 const int width1 = 1024;
@@ -98,12 +98,12 @@ int main (int argc, char *argv[]){
     for (int i = 0; i < N; i++){
       for (int j = 0; j < height1; j++){
         for (int k = 0; k < width1; k++){
-          bright[c][j][k] += maxb[i]*exp((double) -1.0*((k-particle_x[c][i])*(k-particle_x[c][i])+(j-particle_y[c][i])*(j-particle_y[c][i]))/(2.0*radius[i]*radius[i]/100.0) );
+          bright[c][j][k] += maxb[i]*exp(-1.0*((k-particle_x[c][i])*(k-particle_x[c][i])+(j-particle_y[c][i])*(j-particle_y[c][i]))/(2.0*radius[i]*radius[i]/100.0) );
         }
       }
     }
 
-    max[c]=0; min[c]=255.5;
+    max[c]=0.0; min[c]=255.5;
     for (int j = 0; j < height1; j++){
       for (int k = 0; k < width1; k++){
         if(bright[c][j][k] < min[c]){
@@ -117,7 +117,7 @@ int main (int argc, char *argv[]){
 
     for (int j = 0; j < height1; j++){
       for (int k = 0; k < width1; k++){
-        bright[c][j][k] = (bright[c][j][k]-min[c])/(max[c]-min[c])*255;
+        bright[c][j][k] = (bright[c][j][k]-min[c])/(max[c]-min[c])*255.0;
       }
     }
 

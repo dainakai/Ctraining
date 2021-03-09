@@ -4,7 +4,7 @@ AUTHER : Dai Nakai
 DATE : 2021/2/18
 
 Read two images which are adjacent in time each other.
-Former called interrogation, latter called search window.
+Former is called interrogation, latter is called search window.
 Calculate cross-correlation and vectors which are 50% overlapped each other.
 
 CAUTION!
@@ -22,6 +22,7 @@ const char* inputimage2 = "./result/00001.bmp";
 unsigned char header_buf [1078];
 
 const char* outputdata = "data.dat";
+const char* outputpiv = "result.png";
 const char* xxlabel = "{/Times-New-Roman:Italic=20 x} [pixel]";
 const char* yylabel = "{/Times-New-Roman:Italic=20 y} [pixel]";
 const char* cb_label = "{/Symbol:Italic=20 w}_{/Times-New-Roman:Italic=20 z} [sec]";//color bar range min
@@ -172,17 +173,17 @@ int main(void){
     }
   }
 
-  for (int i = 0; i < Cdimy; i++)
-  {
-    for (int j = 0; j < Cdimx; j++)
-    {
-      if(vx[i][j]*vx[i][j]+vy[i][j]*vy[i][j] > 10){
-        vx[i][j] = 0.0;
-        vy[i][j] = 0.0;
-      }
-    }
+  // for (int i = 0; i < Cdimy; i++)
+  // {
+  //   for (int j = 0; j < Cdimx; j++)
+  //   {
+  //     if(vx[i][j]*vx[i][j]+vy[i][j]*vy[i][j] > 10){
+  //       vx[i][j] = 0.0;
+  //       vy[i][j] = 0.0;
+  //     }
+  //   }
     
-  }
+  // }
   
 
   fp = fopen(outputdata,"w");
@@ -201,22 +202,16 @@ int main(void){
 
   //PNG image
 	fprintf(gp,"set terminal pngcairo enhanced font 'Times New Roman,15' \n");
-	fprintf(gp,"set output 'result.png'\n");
+	fprintf(gp,"set output '%s'\n",outputpiv);
 	
-	fprintf(gp,"set size ratio -1\n");
-
-	fprintf(gp,"set lmargin screen 0.15\n");
-	fprintf(gp,"set rmargin screen 0.85\n");
-	fprintf(gp,"set tmargin screen 0.85\n");
-	fprintf(gp,"set bmargin screen 0.15\n");
+	fprintf(gp,"set size ratio 1\n");
 
   // fprintf(gp,"set yrange reverse\n");
 
 	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
-	fprintf(gp,"set palette rgb 33,13,10\n");
-	fprintf(gp,"plot 'data.dat' using 1:2:($3*0.5):($4*(-0.5))  w vector ti ''\n");
+	fprintf(gp,"plot '%s' using 1:2:($3*0.5):($4*(-0.5))  w vector ti ''\n",outputdata);
 
  	fflush(gp); //Clean up Data
 
