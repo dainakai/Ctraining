@@ -23,7 +23,7 @@ char outputpath2[100];
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
 const int N = 1000;
-const double dt = 5.0; 
+const double dt = 5; 
 const int rep = 2;
 
 const int width1 = 1024;
@@ -39,7 +39,7 @@ double a[N],b[N];
 double u[N],v[N];
 double radius[N]; // Each particle diameter
 double particle_x[rep][N],particle_y[rep][N];
-double Z; // Standard Normal Distribution
+double Z[N]; // Standard Normal Distribution
 double bright[rep][height1][width1];
 
 int maxb[N];
@@ -61,19 +61,20 @@ int main (int argc, char *argv[]){
   fread(header_buf2, sizeof(unsigned char), 1078, fp);// Read Header2
   fclose (fp);
 
-
+  #pragma omp parallel for
   for (int i = 0; i < N; i++){ // Two independent random arrays
     a[i]=(double)rand()/RAND_MAX;
     b[i]=(double)rand()/RAND_MAX;
 
-    Z = sqrt(-2.0*log(a[i]))*cos((double)2.0*M_PI*b[i]);
-    radius[i] = sddia*Z+0.50*avrdia;
+    Z[i] = sqrt(-2.0*log(a[i]))*cos((double)2.0*M_PI*b[i]);
+    radius[i] = sddia*Z[i]+0.50*avrdia;
 
     particle_x[0][i] = rand() % 1024 ;
     particle_y[0][i] = rand() % 1024 ;
     maxb[i]= (rand() % 128)+128;
   }
-   
+
+  #pragma omp critical 
   for (int i = 1; i < rep; i++){
     for (int j = 0; j < N; j++){
       u[j] = cos (2.0* M_PI/ (width1-1.0) *particle_x[i-1][j])* sin (2.0* M_PI/ (height1-1.0) *particle_y[i-1][j]);

@@ -205,13 +205,14 @@ int main(void){
 	fprintf(gp,"set output '%s'\n",outputpiv);
 	
 	fprintf(gp,"set size ratio 1\n");
+	fprintf(gp,"set palette rgb 33,13,10\n");
 
   // fprintf(gp,"set yrange reverse\n");
 
 	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
-	fprintf(gp,"plot '%s' using 1:2:($3*0.5):($4*(-0.5))  w vector ti ''\n",outputdata);
+	fprintf(gp,"plot '%s' using 1:2:($3/(sqrt($3*$3+$4*$4))):(-$4/(sqrt($3*$3+$4*$4))):(sqrt($3*$3+$4*$4))  w vector lc palette ti ''\n",outputdata);
 
  	fflush(gp); //Clean up Data
 
