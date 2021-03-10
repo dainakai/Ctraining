@@ -80,8 +80,8 @@ int main (int argc, char *argv[]){
       u[j] = cos (2.0* M_PI/ (width1-1.0) *particle_x[i-1][j])* sin (2.0* M_PI/ (height1-1.0) *particle_y[i-1][j]);
       v[j] = -1.0* sin(2.0* M_PI/ (width1-1.0) *particle_x[i-1][j])* cos (2.0* M_PI/ (height1-1.0) *particle_y[i-1][j]);
 
-      particle_x[i][j] = particle_x[i-1][j] + u[j]*dt;
-      particle_y[i][j] = particle_y[i-1][j] + v[j]*dt;
+      particle_x[i][j] = particle_x[i-1][j] - u[j]*dt;
+      particle_y[i][j] = particle_y[i-1][j] - v[j]*dt;
     }
   }
   
@@ -99,7 +99,7 @@ int main (int argc, char *argv[]){
     for (int i = 0; i < N; i++){
       for (int j = 0; j < height1; j++){
         for (int k = 0; k < width1; k++){
-          bright[c][j][k] += maxb[i]*exp(-1.0*((k-particle_x[c][i])*(k-particle_x[c][i])+(j-particle_y[c][i])*(j-particle_y[c][i]))/(2.0*radius[i]*radius[i]/100.0) );
+          bright[c][j][k] += maxb[i]*exp(-1.0*((particle_x[c][i]-k)*(particle_x[c][i]-k)+(particle_y[c][i]-j)*(particle_y[c][i]-j))/(2.0*radius[i]*radius[i]/100) );
         }
       }
     }

@@ -15,8 +15,8 @@ using namespace std;
 
 const char* inputimage1 = "./images/1024.bmp";
 const char* inputimage2 = "./images/512.bmp";
-const char* outputheader1 = "./original";
-const char* outputheader2 = "./result";
+const char* outputheader1 = "./testoriginal";
+const char* outputheader2 = "./testresult";
 char outputpath1[100];
 char outputpath2[100];
 
@@ -104,6 +104,43 @@ int main (int argc, char *argv[]){
     }
 
   }
+
+  // #pragma omp parallel for
+  // for(int c=0; c < rep ; c++){
+
+  //   for (int j = 0; j < height1; j++){
+  //     for (int k = 0; k < width1; k++){
+  //       bright[c][j][k]=0.0;
+  //     }
+  //   }
+  
+  //   for (int i = 0; i < N; i++){
+  //     for (int j = 0; j < height1; j++){
+  //       for (int k = 0; k < width1; k++){
+  //         bright[c][j][k] += maxb[i]*exp(-1.0*((k-particle_x[c][i])*(k-particle_x[c][i])+(j-particle_y[c][i])*(j-particle_y[c][i]))/(2.0*radius[i]*radius[i]/100.0) );
+  //       }
+  //     }
+  //   }
+
+  //   max[c]=0.0; min[c]=255.5;
+  //   for (int j = 0; j < height1; j++){
+  //     for (int k = 0; k < width1; k++){
+  //       if(bright[c][j][k] < min[c]){
+  //         min[c] = bright[c][j][k];
+  //       }
+  //       if(bright[c][j][k]>max[c]){
+  //         max[c] = bright[c][j][k];
+  //       }
+  //     }
+  //   }
+
+  //   for (int j = 0; j < height1; j++){
+  //     for (int k = 0; k < width1; k++){
+  //       bright[c][j][k] = (bright[c][j][k]-min[c])/(max[c]-min[c])*255.0;
+  //     }
+  //   }
+
+  // }
   
   #pragma omp critical
   for (int c = 0; c < rep; c++){
