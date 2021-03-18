@@ -100,7 +100,7 @@ int main (int argc, char *argv[]){
       int temp1,temp2;
       temp1 = (int)particle_x[c][i];
       temp2 = (int)particle_y[c][i];
-      bright[c][temp1][temp2]=255.0;
+      bright[c][temp2][temp1]=255.0;
     }
 
   }
