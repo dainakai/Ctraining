@@ -1,5 +1,5 @@
 /******************************************************************************
-PROGRAM NAME : PIV Verification Software
+PROGRAM NAME : PIV Error Analysis
 AUTHER : Dai Nakai
 DATE : 2021/3/19
 

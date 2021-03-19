@@ -1,5 +1,5 @@
 /******************************************************************************
-PROGRAM NAME : PIV Image Generating
+PROGRAM NAME : PIV Image Generating Software
 AUTHER : Dai Nakai
 DATE : 2021/2/22
 
