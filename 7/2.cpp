@@ -17,12 +17,12 @@ CAUTION!
 #include<omp.h>
 using namespace std;
 
-const char* inputimage1 = "./result/00000.bmp";
-const char* inputimage2 = "./result/00001.bmp";
+const char* inputimage1 = "./result10000/00000.bmp";
+const char* inputimage2 = "./result10000/00001.bmp";
 unsigned char header_buf [1078];
 
-const char* outputdata = "data.dat";
-const char* outputpiv = "result.png";
+const char* outputdata = "data10000.dat";
+const char* outputpiv = "result10000.png";
 const char* xxlabel = "{/Times-New-Roman:Italic=20 x} [pixel]";
 const char* yylabel = "{/Times-New-Roman:Italic=20 y} [pixel]";
 const char* cb_label = "{/Symbol:Italic=20 w}_{/Times-New-Roman:Italic=20 z} [sec]";//color bar range min
@@ -114,12 +114,11 @@ int main(void){
         }
       }
       
-////  changed changed tested image2[Sy + i*N/2 + k]
       for (int CIdxy = 0; CIdxy < N; CIdxy++){
         for (int CIdxx = 0; CIdxx < M; CIdxx++){
           for (int k = 0; k < N; k++){
             for (int l = 0; l < M; l++){
-              numer[i][j][CIdxy][CIdxx] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image2[ i*N/2+k + CIdxy][ j*M/2+l + CIdxx]-avrS[i][j]);
+              numer[i][j][CIdxy][CIdxx] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image2[i*N/2+k + CIdxy][j*M/2+l + CIdxx]-avrS[i][j]);
             }
           }
         }
@@ -137,7 +136,7 @@ int main(void){
 
       for (int k = 0; k < N; k++){
         for (int l = 0; l < M; l++){
-          denom2[i][j] = (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j]);
+          denom2[i][j] += (image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j])*(image1[Sy+i*N/2+k][Sx+j*M/2+l]-avrI[i][j]);
         }
       }
       
@@ -153,37 +152,24 @@ int main(void){
         }
       }
     }
-  }
+  } 
 
-  double min[Cdimy][Cdimx];
   double max[Cdimy][Cdimx];
   for (int i = 0; i < Cdimy; i++){
     for (int j = 0; j < Cdimx; j++){
-      max[i][j] = 0.0;
+      max[i][j] = -10000.0;
 
       for (int k = 0; k < N; k++){
         for (int l = 0; l < M; l++){
           if(max[i][j] < C[i][j][k][l]){
             max[i][j] = C[i][j][k][l];
-            vx[i][j] = (double)l - (double)M/2.0;
-            vy[i][j] = (double)N/2.0 - (double)k;
+            vx[i][j] = (double)l - (double)(M-1.0)/2.0;
+            vy[i][j] = (double)k - (double)(N-1.0)/2.0;
           }
         }
       }
     }
   }
-
-  // for (int i = 0; i < Cdimy; i++)
-  // {
-  //   for (int j = 0; j < Cdimx; j++)
-  //   {
-  //     if(vx[i][j]*vx[i][j]+vy[i][j]*vy[i][j] > 10){
-  //       vx[i][j] = 0.0;
-  //       vy[i][j] = 0.0;
-  //     }
-  //   }
-    
-  // }
   
 
   fp = fopen(outputdata,"w");
@@ -205,6 +191,8 @@ int main(void){
 	fprintf(gp,"set output '%s'\n",outputpiv);
 	
 	fprintf(gp,"set size ratio 1\n");
+  fprintf(gp,"set xrange[0:512]\n");
+  fprintf(gp,"set yrange[0:512]\n");
 	fprintf(gp,"set palette rgb 33,13,10\n");
 
   // fprintf(gp,"set yrange reverse\n");
@@ -212,7 +200,7 @@ int main(void){
 	fprintf(gp,"set xlabel '%s'offset 0.0,0.5\n",xxlabel);
 	fprintf(gp,"set ylabel '%s'offset 0.5,0.0\n",yylabel);
 
-	fprintf(gp,"plot '%s' using 1:2:($3/(sqrt($3*$3+$4*$4))):(-$4/(sqrt($3*$3+$4*$4))):(sqrt($3*$3+$4*$4))  w vector lc palette ti ''\n",outputdata);
+	fprintf(gp,"plot '%s' using ($1*16+32):($2*16+32):(15*$3/(sqrt($3*$3+$4*$4))):(15*$4/(sqrt($3*$3+$4*$4))):(sqrt($3*$3+$4*$4))  w vector lc palette ti ''\n",outputdata);
 
  	fflush(gp); //Clean up Data
 

@@ -5,8 +5,8 @@ DATE : 2021/2/22
 
 Particle image producing software.
 Images are originally gained with 1024 pixels square, then
-be trimmed at their center 512 pixels square.
-variable particular N, iterations rep
+trimmed at their center 512 pixels square.
+variables: particular N, iterations rep
 ******************************************************************************/
 #include<bits/stdc++.h>
 #include<sys/stat.h>
@@ -15,15 +15,15 @@ using namespace std;
 
 const char* inputimage1 = "./images/1024.bmp";
 const char* inputimage2 = "./images/512.bmp";
-const char* outputheader1 = "./original";
-const char* outputheader2 = "./result";
+const char* outputheader1 = "./original10000";
+const char* outputheader2 = "./result10000";
 char outputpath1[100];
 char outputpath2[100];
 
 const double avrdia = 70.0; // Average diameter
 const double sddia = 20.0; // Standard deviation of diameters
-const int N = 1000;
-const double dt = 5; 
+const int N = 10000;
+const double dt = 4; 
 const int rep = 2;
 
 const int width1 = 1024;
