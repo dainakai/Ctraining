@@ -80,7 +80,7 @@ int main (){
 	fprintf(gp,"set palette rgbformulae 22,13,-31\n");
 
 	fprintf(gp,"set pm3d map\n");
-	fprintf(gp,"splot '%s'  using 1:2:3 with pm3d, '%s' using 1:2:($1*0.0):(%lf*$4):(%lf*$5):($1*0.0) with vectors head filled lt 2 lc 'black' \n",output_data_file,output_data_file,i,v_r,v_r);
+	fprintf(gp,"splot '%s'  using 1:2:3 with pm3d, '%s' using 1:2:($1*0.0):(%lf*$4):(%lf*$5):($1*0.0) with vectors head filled lt 2 lc 'black' \n",output_data_file,output_data_file,v_r,v_r);
 
  	fflush(gp); //Clean up Data
 
