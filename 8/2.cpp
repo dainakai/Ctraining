@@ -16,8 +16,8 @@ const int height = 1024;
 const char* read_file_dir = "./img";
 const char* read_file_header = "fc2_save_2014-08-09-141415-";
 const char* ppimg_path = "./preprcs_img.bmp";
-const char* write_file_dir = "./pivimg";
-const char* write_file_header = "pivimg";
+const char* write_file_dir = "./retouchedimg";
+const char* write_file_header = "retouchedimg";
 
 unsigned char image_in[height][width];
 unsigned char ppimg_in[height][width];
@@ -31,7 +31,7 @@ int temp;
 FILE *fp;
 /*********************************main****************************************/
 int main(){
-    mkdir(write_file,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    mkdir(write_file_dir,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
     if(!(fp = fopen(ppimg_path,"rb"))){
         printf("Preprocessing image not valid\n");
