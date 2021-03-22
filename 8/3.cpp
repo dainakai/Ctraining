@@ -1,7 +1,7 @@
 /******************************************************************************
 PROGRAM NAME : Histogram equalization Software (1280*1024 pixels) 
 AUTHER : Dai Nakai
-DATE : 2021/3/20
+DATE : 2021/3/22
 
 Histogram equalization procesing on preprocessed images for PIV.
 ******************************************************************************/
@@ -25,7 +25,7 @@ unsigned int h[intbit];
 
 char read_file[100];
 char write_file[100];
-int temp[height][width];
+float temp[height][width];
 
 FILE *fp;
 /*********************************main****************************************/
@@ -75,16 +75,6 @@ int main(){
             }
         }
 
-        for (int i = 0; i < intbit; i++)
-        {
-            cout << i << " : " << h[i] << endl;
-        }
-        
-
-
-
-
-        
         // Image outputting
         sprintf(write_file, "%s/%s%04d.bmp", write_file_dir, write_file_header, num-1);
         printf("outputting : %s\n", write_file);
@@ -98,7 +88,6 @@ int main(){
         fwrite(image_out, sizeof(image_out), 1, fp);
         fclose(fp);
 
-        break;
     }
 
     return 0;
