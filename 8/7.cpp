@@ -25,13 +25,14 @@ const int y_min = 0;//y range min
 const int y_max = 1024;//y range max
 const int cb_min = 0;//color bar range min
 const int cb_max = 10;//color bar range max
+const int imgnum = 99;
 
 FILE *gp;
 /*********************************main****************************************/
 int main(){
     mkdir(write_file_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-	for (int num = 0; num < 99; num++){
+	for (int num = 0; num < imgnum; num++){
         sprintf(read_file,"%s/%s%04d.dat",read_file_dir,read_file_header,num);
         sprintf(write_file,"%s/%s%04d.png", write_file_dir, write_file_header,num);
 
