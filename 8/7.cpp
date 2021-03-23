@@ -1,5 +1,5 @@
 /******************************************************************************
-PROGRAM NAME : PIV visualization
+PROGRAM NAME : PIV visualization (GIF animation)
 AUTHER : Dai Nakai
 DATE : 2021/3/22
 ******************************************************************************/

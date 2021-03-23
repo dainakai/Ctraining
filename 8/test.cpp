@@ -1,32 +1,21 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+FILE *fp;
 int main(){
-    // int a[3][2] = {1,2,3,4,5,6};
-    // int *a_p;
-    // a_p = (int*)a;
-    
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     printf("%d : %d\n", i, *(a_p+i));
-    // }
-    // return 0;
-
-    // int a[3][2] = {1,2,3,4,5,6};
-    // int *a_p;
-    // a_p = (int*)a;
-    
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     printf("%d : %d\n", i, a_p[i]);
-    // }
-    // return 0;
-
-    int a[3][2] = {1,2,3,4,5,6};
-    
+    fp = fopen("./test.dat","r");
+    int a[6];
     for (int i = 0; i < 6; i++)
     {
-        printf("%d : %d\n", i, *(a+i));
+        fscanf(fp,"%d",&a[i]);
     }
+    
+    
+    cout << a[0] << endl;
+    cout << a[1] << endl;
+    cout << a[2] << endl;
+    cout << a[3] << endl;
+    cout << a[4] << endl;
+    cout << a[5] << endl;
     return 0;
 }

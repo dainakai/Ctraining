@@ -42,6 +42,7 @@ const int Cdimy = 2*(height-2*Sy)/N - 1; // vertical dimension of correlation wi
 double C[Cdimy][Cdimx][N][M]; // Correlation window on each Interrogation
 double vx[Cdimy][Cdimx]; // x-axis velocity
 double vy[Cdimy][Cdimx]; // y-axis velocity
+double w[Cdimy][Cdimx];
 
 // Temporary data
 double numer[Cdimy][Cdimx][N][M]; // Numerator of each C window
@@ -179,14 +180,27 @@ int main(){
             }
         }
 
+        for (int i = 0; i < Cdimy; i++)
+        {
+            for (int j = 0; j < Cdimx; j++)
+            {
+                if((i == Cdimy-1) || (i == 0) || (j == Cdimx-1) || (j == 0)){
+                    w[i][j] = 0.0;
+                }else{
+                    w[i][j] = (vy[i+1][j]-vy[i-1][j])/(2.0*Sx) - (vx[i][j+1]-vx[i][j-1])/(2.0*Sy);
+                }
+            }
+        }
+
         //Data outputting
         sprintf(write_file, "%s/%s%04d.dat", write_file_dir, write_file_header, num-1);
         fp1 = fopen(write_file,"w");
 
         for (int i = 0; i < Cdimy; i++){
             for (int j = 0; j < Cdimx; j++){
-                fprintf(fp1, "%d %d %lf %lf\n", j, i, vx[i][j], vy[i][j]);
+                fprintf(fp1, "%d %d %lf %lf %lf\n", j, i, vx[i][j], vy[i][j], w[i][j]);
             }
+            fprintf(fp1,"\n"); //TESTTEST
         }
 
     }
