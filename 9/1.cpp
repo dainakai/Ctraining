@@ -1,5 +1,5 @@
 /******************************************************************************
-PROGRAM NAME : One-directional DFT Software
+PROGRAM NAME : One-dimensional DFT Software
 AUTHER : Dai Nakai
 DATE : 2021/3/25
 ******************************************************************************/
