@@ -10,9 +10,6 @@ using namespace std;
 void S_fft (double *ak, double *bk, int N, int ff);
 void Ini_val (double *re_f, double *im_f, int N, int A, int B);
 
-const char* output_data_dir = "./data";
-const char* output_img_dir = "./img";
-
 const int A = 20; //Frequency parameter 1
 const int B = 5; // 2
 const int N = 1024; // 2^m
@@ -22,8 +19,8 @@ FILE *fp;
 FILE *gp;
 /*********************************main****************************************/
 int main () {
-    mkdir(output_data_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-    mkdir(output_img_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    mkdir("./data", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    mkdir("./img", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
     double *re_f, *im_f;
     re_f = (double *)malloc(sizeof(double)*N);
@@ -37,7 +34,7 @@ int main () {
     }
     fclose(fp); 
 
-    S_fft(re_f, im_f, N, -1);
+    S_fft(re_f, im_f, N, 1);
 
     double pw, fq;
     fp = fopen("./data/Ex1-FFT.dat","w");
@@ -73,9 +70,9 @@ int main () {
     return 0;
 }
 
-void Ini_val(double *re_f, double *im_f, int N, int pA, int pB){
+void Ini_val(double *re_f, double *im_f, int N, int A, int B){
     for (int i = 0; i < N; i++){
-        re_f[i] = sin ((double)pA*2.0*M_PI*(double)i/(double)N)*cos((double)pB*2.0*M_PI*(double)i/(double)N);
+        re_f[i] = sin ((double)A*2.0*M_PI*(double)i/(double)N)*cos((double)B*2.0*M_PI*(double)i/(double)N);
         im_f[i] = 0.0;
     }
 }
