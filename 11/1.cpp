@@ -61,7 +61,7 @@ int main () {
     fprintf(gp,"set terminal pngcairo enhanced font 'Times New Roman,15'\n");
 	fprintf(gp,"set output './img/Ex1-FFT.png'\n");
 	fprintf(gp,"unset key\n");
-	fprintf(gp,"set size ratio 1\n");
+	fprintf(gp,"set size ratio 0.8\n");
     fprintf(gp,"set xlabel '{/Times-New-Roman:Italic=20 f} [Hz]'\n");
     fprintf(gp,"set xrange [0:40]\n");
     fprintf(gp,"plot './data/Ex1-FFT.dat' using 1:2 with lines\n");

@@ -7,6 +7,8 @@ DATE : 2021/3/29
 #include<sys/stat.h>
 using namespace std;
 
+#define CPU_TIME_PER_SEC 1000
+
 void S_fft (double *ak, double *bk, int N, int ff);
 void Ini_val (double *re_f, double *im_f, int N, int A, int B);
 
@@ -21,6 +23,7 @@ char file_path_img[100];
 const int A = 20; //Frequency parameter 1
 const int B = 5; // 2
 const double t_length =1.0; // Measuring time
+const double coef_a = 0.000008;
 
 double pw, fq;
 
@@ -61,14 +64,14 @@ int main(){
 	    fprintf(gp,"set key right top\n");
 	    fprintf(gp,"set size ratio 0.8\n");
         fprintf(gp,"set xlabel '{/Times-New-Roman:Italic=20 t} [sec]'\n");
-        fprintf(gp,"plot '%s' using 1:2 with lines title 'N = %d'\n",file_path_dat,N[i]);
+        fprintf(gp,"plot '%s' using 1:2 with lines title 'N = %d'\n",file_path_dat,N[i],coef_a);
         pclose(gp);
 
-        cpu_time[2*i] = clock()/1000.0;
+        cpu_time[2*i] = clock()/(double)CPU_TIME_PER_SEC;
 
         S_fft(re_f, im_f, N[i], 1);
 
-        cpu_time[2*i+1] = clock()/1000.0;
+        cpu_time[2*i+1] = clock()/(double)CPU_TIME_PER_SEC;
 
         sprintf(file_path_dat, "%s/%s%05d.dat",output_data_dir,output_header2,N[i]);
         fp = fopen(file_path_dat,"w");
@@ -105,11 +108,12 @@ int main(){
     gp = popen("gnuplot","w");
     fprintf(gp,"set terminal pngcairo enhanced font 'Times New Roman,15'\n");
 	fprintf(gp,"set output '%s'\n",file_path_img);
-	fprintf(gp,"unset key\n");
+	fprintf(gp,"set key left top\n");
     fprintf(gp,"set size ratio 0.8\n");
+    fprintf(gp,"set logscale x 2\n");
     fprintf(gp,"set xlabel 'Number of discrete value {/Times-New-Roman:Italic=20 N} [-]'\n");
-    // fprintf(gp,"set xrange [0:40]\n");
-    fprintf(gp,"plot '%s' using 1:2 with linespoints\n",file_path_dat);
+    fprintf(gp,"set ylabel 'time {/Times-New-Roman:Italic=20 t} [sec]'\n");
+    fprintf(gp,"plot '%s' using 1:2 with linespoints title 'CPU TIME', %lf*x*log(x)/log(2)\n",file_path_dat,coef_a);
     pclose(gp);
 
     return 0;
