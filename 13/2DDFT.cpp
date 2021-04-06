@@ -1,16 +1,17 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-const char* inputimage = "./sample64.bmp";
+const char* inputimage = "./sample.bmp";
 const char* outputimage1 = "./original.bmp";
 const char* outputimage2 = "./2DFFT.bmp";
 
-const int width = 64;
-const int height = 64;
+const int width = 128;
+const int height = 128;
 unsigned char header_buf[1078];
 unsigned char image_out[height][width];
 double realimage[height][width];
 double re_array[height][width],im_array[height][width];
+double re_X[height][width],im_X[height][width];
 double pw[height][width];
 
 
@@ -41,7 +42,7 @@ int main(){
     {
         for (int j = 0; j < width; j++)
         {
-            realimage[i][j] = (double)image_out[i][j]/255.0;
+            realimage[i][j] = (double)image_out[i][j];
         }
         
     }
@@ -51,22 +52,30 @@ int main(){
     {
         for (int j = 0; j < width; j++)
         {
-            double temp1=0.0;
-            double temp2=0.0;
-            
             for (int k = 0; k < height; k++)
             {
-                for (int l = 0; l < width; l++)
-                {
-                    temp1 += (double)realimage[k][l]*cos(2.0*M_PI*(i*k/height+j*l/width));
-                    temp2 += (double)realimage[k][l]*sin(-2.0*M_PI*(i*k/height+j*l/width));
-                }
+                re_array[i][j] += realimage[k][j]*cos(2.0*M_PI*((double)i*k/height));
+                im_array[i][j] += realimage[k][j]*(-1.0)*sin(2.0*M_PI*((double)i*k/height));
             }
-
-            re_array[i][j] = temp1;
-            im_array[i][j] = temp2;
+                printf("re_array[%d][%d] : %lf\n",i,j,im_array[i][j]);
         }
     }
+
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            for (int k = 0; k < width; k++)
+            {
+                re_X[i][j] += re_array[i][k]*cos(2.0*M_PI*((double)j*k/width)) + im_array[i][k]*sin(2.0*M_PI*((double)j*k/width));
+                im_X[i][j] += re_array[i][k]*sin(-2.0*M_PI*((double)j*k/width)) + im_array[i][k]*cos(2.0*M_PI*((double)j*k/width));
+            }
+            
+        }
+        
+    }
+    
     
 
 
@@ -75,7 +84,7 @@ int main(){
     {
         for (int j = 0; j < width; j++)
         {
-            pw[i][j] = re_array[i][j]*re_array[i][j] + im_array[i][j]*im_array[i][j];
+            pw[i][j] = re_X[i][j]*re_X[i][j] + im_X[i][j]*im_X[i][j];
         }
     }
 
@@ -99,20 +108,40 @@ int main(){
             }
         }
     }
-    printf("%lf %lf\n",max, min);
+    printf("max : %lf, min : %lf\n",max, min);
     
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            pw[i][j] = 255.0*((pw[i][j]-min)/(max-min));
+            // pw[i][j] = 255.0*log(99999999999.0*(pw[i][j]-min)/(max-min)+1.0)/log(100000000000);
+            pw [i][j] = log(pw[i][j]);
+            pw[i][j] = 255.0*(pw[i][j] - log(min))/(log(max)-log(min));
+            printf("%lf\n",pw[i][j]);
             image_out[i][j] = (unsigned char)pw[i][j];
         }
     }
-    // for (int i = 0; i < width; i += 4)
-    // {
-    //     printf("%05lf %05lf %05lf %05lf\n",pw[75][i],pw[75][i+1],pw[75][i+2],pw[75][i+3]);
-    // }
+    unsigned char temp[height][width];
+    for (int i = 0; i < height/2; i++)
+    {
+        for (int j = 0; j < width/2; j++)
+        {
+            temp[i][j] = image_out[i+height/2][j+width/2];
+            image_out[i+height/2][j+width/2] = image_out[i][j];
+            image_out[i][j] = temp[i][j];
+        }
+    }
+
+    for (int i = height/2; i < height; i++)
+    {
+        for (int j = 0; j < width/2; j++)
+        {
+            temp[i][j] = image_out[i-height/2][j+width/2];
+            image_out[i-height/2][j+width/2] = image_out[i][j];
+            image_out[i][j] = temp[i][j];
+        }
+        
+    }
     
     fp = fopen(outputimage2,"wb");
     fwrite(header_buf,sizeof(unsigned char),1078,fp);
