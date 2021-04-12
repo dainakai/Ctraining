@@ -1,7 +1,7 @@
 /******************************************************************************
 PROGRAM NAME : Digital holography generating
 AUTHER : Dai Nakai
-DATE : 2021/4/9
+DATE : 2021/4/12
 ******************************************************************************/
 #include<bits/stdc++.h>
 using namespace std;
@@ -60,9 +60,8 @@ int main () {
             }
             *(image_out + j + i*width) = (unsigned char)*(re_object_plane + j + i*width);
 
-            // temp = 2.0*M_PI*posi_z/wave_length*sqrt(1.0-wave_length*wave_length/height/height/dx/dx*((double)i-height/2.0+height*height*dx*dx/2.0/posi_z/wave_length)*((double)i-height/2.0+height*height*dx*dx/2.0/posi_z/wave_length)-wave_length*wave_length/width/width/dx/dx*((double)j-width/2.0+width*width*dx*dx/2.0/posi_z/wave_length)*((double)j-width/2.0+width*width*dx*dx/2.0/posi_z/wave_length));
-            const2 = ((double)i-height/2.0)*((double)j-height/2.0)/wave_length/wave_length;
-            const2 = ((double)j-width/2.0)*((double)j-width/2.0)/wave_length/wave_length;
+            const2 = ((double)i - height/2.0)*((double)i - height/2.0)/height/height/dx/dx;
+            const3 = ((double)j - width/2.0)*((double)j - width/2.0)/width/width/dx/dx;
             temp = 2.0*M_PI*posi_z*sqrt(const1-const2-const3);
             *(re_trans_func + j + i*width) = cos(temp);
             *(im_trans_func + j + i*width) = sin(temp);
