@@ -48,7 +48,7 @@ int main () {
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
             if(((double)j*dx - posi_x)*((double)j*dx - posi_x) + ((double)i*dx - posi_y)*((double)i*dx - posi_y) > diam*diam/4.0){
-                re_object[i][j] = 128.0;
+                re_object[i][j] = 127.0;
             }else{
                 re_object[i][j] = 0.0;
             }
@@ -95,7 +95,7 @@ int main () {
 void twoDimFFT(double re[height][width], double im[height][width], int flag){
     double re_temp1[width], im_temp1[width], re_temp2[height], im_temp2[height];
 
-    if((flag != 1) || (flag != -1)){
+    if((flag != 1) && (flag != -1)){
         printf("flag of FFT must be either 1 or -1. Software quitting... \n");
         exit(1);
     }
