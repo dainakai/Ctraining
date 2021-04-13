@@ -87,21 +87,37 @@ int main () {
         *(wave_strength + i) = *(re_hologram_plane + i) * *(re_hologram_plane + i) + *(im_hologram_plane + i)* *(im_hologram_plane + i) + 1.0 + 2.0 * *(re_hologram_plane + i);
     }
 
-    double min = *wave_strength, max = *wave_strength;
-    for (int i = 0; i < width*height; i++){
-        if(*(wave_strength + i) > max) max = *(wave_strength + i);
-        if(*(wave_strength + i) < min) min = *(wave_strength + i);
-    }
-    for (int i = 0; i < width*height; i++){
-        *(wave_strength + i) = 255.0*(*(wave_strength + i) - min)/(max-min);
+    // double min = *wave_strength, max = *wave_strength;
+    // for (int i = 0; i < width*height; i++){
+    //     if(*(wave_strength + i) > max) max = *(wave_strength + i);
+    //     if(*(wave_strength + i) < min) min = *(wave_strength + i);
+    // }
+    // for (int i = 0; i < width*height; i++){
+    //     *(wave_strength + i) = 255.0*(*(wave_strength + i) - min)/(max-min);
+    //     *(image_out + i) = (unsigned char)*(wave_strength + i);
+    // }
+
+    for (int i = 0; i < width*height; i++)
+    {
+        *(wave_strength + i) = sqrt(*(wave_strength + i));
         *(image_out + i) = (unsigned char)*(wave_strength + i);
     }
+    
 
 
     fp = fopen(hologram,"wb");
     fwrite(header_buf,sizeof(unsigned char),1078,fp);
     fwrite(image_out,sizeof(unsigned char),width*height,fp);
     fclose(fp);
+
+    free(image_out);
+    free(re_object_plane);
+    free(im_object_plane);
+    free(re_trans_func);
+    free(im_trans_func);
+    free(re_hologram_plane);
+    free(im_hologram_plane);
+    free(wave_strength);
 
     return 0;
     
@@ -137,6 +153,11 @@ void twoDimFFT(double *re, double *im, int height, int width, int flag){
             *(im + i + j*width) = *(im_temp2 + j);
         }
     }
+
+    free(re_temp1);
+    free(im_temp1);
+    free(re_temp2);
+    free(im_temp2);
 }
 
 void S_fft(double *ak, double *bk, int N, int ff){
