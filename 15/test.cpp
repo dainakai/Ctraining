@@ -40,6 +40,22 @@ int main(){
         }
         
     }
+
+    // unsigned char array[height][width];
+    // for (int i = 0; i < height/2; i++){
+    //     for (int j = 0; j < width/2; j++){
+    //         array[i][j] = image_out[i + height/2][j + width/2];
+    //         image_out[i + height/2][j + width/2] = image_out[i][j];
+    //         image_out[i][j] = array[i][j];
+    //     }
+    // }
+    // for (int i = height/2; i < height; i++){
+    //     for (int j = 0; j < width/2; j++){
+    //         array[i][j] = image_out[i - height/2][j + width/2];
+    //         image_out[i - height/2][j + width/2] = image_out[i][j];
+    //         image_out[i][j] = array[i][j];
+    //     }
+    // }
     
 
     fp = fopen("test1.bmp","wb");
@@ -55,6 +71,33 @@ int main(){
 
 void twoDimFFT(double re[height][width], double im[height][width], int flag){
     double re_temp1[width], im_temp1[width], re_temp2[height], im_temp2[height];
+
+    if(flag == -1){
+        double re_array[height][width], im_array[height][width];
+        for (int i = 0; i < height/2; i++){
+            for (int j = 0; j < width/2; j++){
+                re_array[i][j] = re[i + height/2][j + width/2];
+                im_array[i][j] = im[i + height/2][j + width/2];
+                re[i + height/2][j + width/2] = re[i][j];
+                im[i + height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+
+        for (int i = height/2; i < height; i++)
+        {
+            for (int j = 0; j < width/2; j++)
+            {
+                re_array[i][j] = re[i - height/2][j + width/2];
+                im_array[i][j] = im[i - height/2][j + width/2];
+                re[i - height/2][j + width/2] = re[i][j];
+                im[i - height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+    }
 
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
@@ -80,6 +123,32 @@ void twoDimFFT(double re[height][width], double im[height][width], int flag){
         {
             re[j][i] = re_temp2[j];
             im[j][i] = im_temp2[j];
+        }
+    }
+    if(flag == 1){
+        double re_array[height][width], im_array[height][width];
+        for (int i = 0; i < height/2; i++){
+            for (int j = 0; j < width/2; j++){
+                re_array[i][j] = re[i + height/2][j + width/2];
+                im_array[i][j] = im[i + height/2][j + width/2];
+                re[i + height/2][j + width/2] = re[i][j];
+                im[i + height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+
+        for (int i = height/2; i < height; i++)
+        {
+            for (int j = 0; j < width/2; j++)
+            {
+                re_array[i][j] = re[i - height/2][j + width/2];
+                im_array[i][j] = im[i - height/2][j + width/2];
+                re[i - height/2][j + width/2] = re[i][j];
+                im[i - height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
         }
     }
 }

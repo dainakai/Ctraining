@@ -1,14 +1,14 @@
 /******************************************************************************
 PROGRAM NAME : Digital holography generating
 AUTHER : Dai Nakai
-DATE : 2021/4/12
+DATE : 2021/4/13
 ******************************************************************************/
 #include<bits/stdc++.h>
 using namespace std;
 
 const char* refimg = "./512.bmp";
-const char* image = "./outputimage_modified.bmp";
-const char* hologram = "./outputholography_modified.bmp";
+const char* image = "./outputimage.bmp";
+const char* hologram = "./outputholography.bmp";
 char* header_buf[1078];
 
 const int height = 512;
@@ -17,7 +17,7 @@ const double dx = 10.0;
 const double diam = 80.0;
 const double posi_x = 2560.0;
 const double posi_y = 2560.0;
-const double posi_z = 10000.0;
+const double posi_z = 15000.0;
 const double wave_length = 0.6328;
 
 void S_fft (double *ak, double *bk, int N, int ff);
@@ -49,11 +49,11 @@ int main () {
         for (int j = 0; j < width; j++){
             if(((double)j*dx - posi_x)*((double)j*dx - posi_x) + ((double)i*dx - posi_y)*((double)i*dx - posi_y) > diam*diam/4.0){
                 re_object[i][j] = 128.0;
+            }else{
+                re_object[i][j] = 0.0;
             }
+            im_object[i][j] = 0.0;
             image_out[i][j] = (unsigned char)re_object[i][j];
-
-            // re_object[i][j] = 128.0 - 128.0*exp(-((dx*j - posi_x)*(dx*j - posi_x) + (dx*i - posi_y)*(dx*i - posi_y))/(diam*diam/2.0));
-            // image_out[i][j] = (unsigned char)re_object[i][j];
 
             temp = 2.0*M_PI*posi_z/wave_length*sqrt(1.0-C[0]*((double)i - height/2.0)*((double)i - height/2.0)-C[1]*((double)j - width/2.0)*((double)j - width/2.0));
             re_trans[i][j] = cos(temp);
@@ -79,7 +79,7 @@ int main () {
 
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
-            image_out[i][j] = sqrt(re_holography[i][j]*re_holography[i][j] + im_holography[i][j]*im_holography[i][j] + 2.0*re_holography[i][j]);
+            image_out[i][j] = (unsigned char)sqrt(re_holography[i][j]*re_holography[i][j] + im_holography[i][j]*im_holography[i][j]);
         }
     }
 
@@ -87,14 +87,45 @@ int main () {
     fwrite(header_buf,sizeof(unsigned char),1078,fp);
     fwrite(image_out,sizeof(unsigned char),width*height,fp);
     fclose(fp);
-    
-    
+
     return 0;
     
 }
 
 void twoDimFFT(double re[height][width], double im[height][width], int flag){
     double re_temp1[width], im_temp1[width], re_temp2[height], im_temp2[height];
+
+    if((flag != 1) || (flag != -1)){
+        printf("flag of FFT must be either 1 or -1. Software quitting... \n");
+        exit(1);
+    }
+
+    if(flag == -1){
+        double re_array[height][width], im_array[height][width];
+        for (int i = 0; i < height/2; i++){
+            for (int j = 0; j < width/2; j++){
+                re_array[i][j] = re[i + height/2][j + width/2];
+                im_array[i][j] = im[i + height/2][j + width/2];
+                re[i + height/2][j + width/2] = re[i][j];
+                im[i + height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+
+        for (int i = height/2; i < height; i++)
+        {
+            for (int j = 0; j < width/2; j++)
+            {
+                re_array[i][j] = re[i - height/2][j + width/2];
+                im_array[i][j] = im[i - height/2][j + width/2];
+                re[i - height/2][j + width/2] = re[i][j];
+                im[i - height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+    }
 
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
@@ -120,6 +151,33 @@ void twoDimFFT(double re[height][width], double im[height][width], int flag){
         {
             re[j][i] = re_temp2[j];
             im[j][i] = im_temp2[j];
+        }
+    }
+
+    if(flag == 1){
+        double re_array[height][width], im_array[height][width];
+        for (int i = 0; i < height/2; i++){
+            for (int j = 0; j < width/2; j++){
+                re_array[i][j] = re[i + height/2][j + width/2];
+                im_array[i][j] = im[i + height/2][j + width/2];
+                re[i + height/2][j + width/2] = re[i][j];
+                im[i + height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
+        }
+
+        for (int i = height/2; i < height; i++)
+        {
+            for (int j = 0; j < width/2; j++)
+            {
+                re_array[i][j] = re[i - height/2][j + width/2];
+                im_array[i][j] = im[i - height/2][j + width/2];
+                re[i - height/2][j + width/2] = re[i][j];
+                im[i - height/2][j + width/2] = im[i][j];
+                re[i][j] = re_array[i][j];
+                im[i][j] = im_array[i][j];
+            }
         }
     }
 }
