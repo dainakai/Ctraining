@@ -1,18 +1,18 @@
 /******************************************************************************
-PROGRAM NAME : Digital Holography verification
+PROGRAM NAME : Digital Holography verification (Single Particle)
 AUTHER : Dai Nakai
-DATE : 2021/4/16
+DATE : 2021/4/17
 ******************************************************************************/
 #include<bits/stdc++.h>
 #include<sys/stat.h>
 using namespace std;
 
-const char* refimg = "./refimg.bmp";
+const char* refimg = "./refimg.bmp"; // 2000 * 512 image
 const char* input_hologram = "./holography.bmp";
 const char* output_dir = "./bmpimages";
-const char* z_x_imagepath = "./z_x_image.bmp";
-const char* intensity_image = "intensity";
-const char* graph_title = "Particle Intensity Distribution";
+const char* z_x_imagepath = "./z_x_image1.bmp";
+const char* intensity_image = "intensity1";
+const char* graph_title = "Single Particle Intensity Distribution";
 
 const int height = 512;
 const int width = 512;
@@ -119,6 +119,7 @@ int main(){
     fprintf(gp,"set size ratio 0.8\n");
     fprintf(gp,"set xlabel '{/Times-New-Roman:Italic=20 z} [{/Symbol m}m]'\n");
     fprintf(gp,"set xrange [0:20000]\n");
+    fprintf(gp,"set yrange [0:]\n");
     fprintf(gp,"set ylabel 'Particle Intensity [-]'\n");
     fprintf(gp,"array data[%d]\n",num);
     for (int i = 0; i < num; i++){
