@@ -8,11 +8,11 @@ DATE : 2021/4/17
 using namespace std;
 
 const char* refimg = "./refimg.bmp"; // 2000 * 512 image
-const char* input_hologram = "./holography.bmp";
-const char* output_dir = "./bmpimages";
-const char* z_x_imagepath = "./z_x_image.bmp";
-const char* intensity_image = "intensity";
-const char* graph_title = "Particle Intensity Distribution";
+const char* input_hologram = "./twinparticleholography.bmp";
+const char* output_dir = "./test_bmpimages";
+const char* z_x_imagepath = "./test_z_x_image.bmp";
+const char* intensity_image = "test_intensity";
+const char* graph_title = "Twin Particle Intensity Distribution";
 
 const int height = 512;
 const int width = 512;

@@ -17,8 +17,8 @@ const double dx = 10.0;
 const double diam = 80.0;
 const double posi_x = 2560.0;
 const double posi_y = 2560.0;
-const double posi_z1 = 5000.0;
-const double posi_z2 = 10000.0;
+const double posi_z1 = 10000.0;
+const double posi_z2 = 5000.0;
 const double wave_length = 0.6328;
 const double peak_bright = 127;
 
@@ -54,19 +54,49 @@ int main (){
         }
     }
 
-    trans_func(re_trans1,im_trans1,posi_z1);
+    trans_func(re_trans1,im_trans1,posi_z1-posi_z2);
     trans_func(re_trans2,im_trans2,posi_z2);
 
     twoDimFFT(re_object,im_object,1);
     
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
-            re_holography[i][j] = re_object[i][j]*(re_trans1[i][j]+re_trans2[i][j]) - im_object[i][j]*(im_trans1[i][j]+im_trans2[i][j]);
-            im_holography[i][j] = re_object[i][j]*((im_trans1[i][j]+im_trans2[i][j])) + im_object[i][j]*(re_trans1[i][j]+re_trans2[i][j]);
+            re_holography[i][j] = re_object[i][j]*re_trans1[i][j] - im_object[i][j]*im_trans1[i][j];
+            im_holography[i][j] = re_object[i][j]*im_trans1[i][j] + im_object[i][j]*re_trans1[i][j];
         }
     }
 
     twoDimFFT(re_holography,im_holography,-1);
+    twoDimFFT(re_object,im_object,-1);
+
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            re_holography[i][j] = re_holography[i][j]*re_object[i][j] - im_holography[i][j]*im_object[i][j];
+            im_holography[i][j] = re_holography[i][j]*im_object[i][j] + im_holography[i][j]*re_object[i][j];
+        }
+    }
+
+    // for (int i = 0; i < height; i++){
+    //     for (int j = 0; j < width; j++){
+    //         re_holography[i][j] = re_holography[i][j]*re_object[i][j];
+    //         im_holography[i][j] = im_holography[i][j]*re_object[i][j];
+    //         printf("%lf ",re_object[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+
+    twoDimFFT(re_holography,im_holography,1);
+
+    
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            re_holography[i][j] = re_holography[i][j]*re_trans2[i][j] - im_holography[i][j]*im_trans2[i][j];
+            im_holography[i][j] = re_holography[i][j]*im_trans2[i][j] + im_holography[i][j]*re_trans2[i][j];
+        }
+    }
+
+    twoDimFFT(re_holography,im_holography,-1);
+
 
     for (int i = 0; i < height; i++)
     {
